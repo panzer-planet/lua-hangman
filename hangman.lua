@@ -5,6 +5,7 @@ You may use this file under the terms of the GNU General Public License v3
 which can be found here http://www.gnu.org/copyleft/gpl.html
 Redistributions of files must retain the above copyright notice.
 ]]
+require "posix"
 
 help = [[
 Hangman in Lua
@@ -46,14 +47,14 @@ options:
 ]]
 
 --The word or phrase to guess
-guess = "hangman"
+guess = "aphantasia"
 --guesses remaining before you loose
 lives_left = 5
 
 options = {}
 -- COMMAND LINE ARGS
 
-if table.getn(arg) > 0 then
+if #arg > 0 then
 	--we have some stuff to handle
 	local answer_index = 2
 
@@ -93,7 +94,7 @@ if table.getn(arg) > 0 then
 			print "Please specify an answer to guess.\ne.g lua hangman.lua a guess this"
 		else
 			--there may be n arguments to handle as the answer to guess
-			local n = table.getn(arg)
+			local n = #arg
 			local g = ""
 			local sep = ""
 				for i = answer_index, n do
@@ -112,7 +113,7 @@ end
 
 so_far = {}
 local sep = "_"
-for i = 1, string.len(guess) do
+for i = 1, string.len(guess), 1 do
 	local n = string.sub(guess,i,i)
 	
 	if n == " "	then
@@ -164,8 +165,8 @@ function present_alphabet()
 end
 
 function check_has_won()
-	for i = 1, table.getn(so_far) do
-		if so_far[i] == "_" then
+	for i = 1, #so_far, 1 do
+		if so_far[i] == "_" or so_far[i] == ",_" then
 			return false
 		end
 	end
@@ -195,7 +196,7 @@ end
 	of every occurance of a character or pattern ]]
 
 function show_so_far()
-	for i = 1, table.getn(so_far) do
+	for i = 1, #so_far do
 		io.write(so_far[i])
 	end
 	print ""
@@ -211,6 +212,7 @@ while selection ~= "!q" and lives_left > 0 do
 	--present alphabet
 	present_alphabet()
 	selection = io.read()
+	
 	if selection == "!q" then
 		break
 	elseif string.len(selection) > 1 then
